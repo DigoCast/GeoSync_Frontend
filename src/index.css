@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+body{
+    font-family: "Poppins";
+}
+
+@theme {
+    --color-background: var(--background); /* slate-50 */
+    --color-surface: var(--surface); /* slate-50 */
+    --color-text-primary: var(--text-primary); /* slate-900 */
+    --color-text-secondary: var(--text-secondary); /* slate-700 */
+    --color-border: var(--border); /* slate-200 */
+    --color-hover: var(--hover); /* slate-100 */
+    --color-primary: var(--primary); /* indigo-600 */
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-text: var(--primary-text); /* white */
+}
+
+:root {
+    --background: #f8fafc; /* slate-50 */
+    --surface: #e6e8ec; /* slate-900 */
+    --text-primary: #0f172a; /* slate-900 */
+    --text-secondary: #334155; /* slate-700 */
+    --border: #e4e8ec; /* slate-200 */
+    --hover: #cbd6e0; /* slate-100 */
+    --primary: #432dd7; /* indigo-600 */
+    --primary-hover: oklch(58.5% 0.233 277.117); /* indigo-500 */
+    --primary-text: #ffffff; /* white */
+}
+
+.dark {
+    --background: #020617; /* slate-950 */
+    --surface: #0e1627; /* slate-900 */
+    --text-primary: #ffffff; /* white */
+    --text-secondary: #cbd5e1; /* slate-300 */
+    --border: #151b27; /* slate-800 */
+    --hover: #1e293b; /* slate-800 */
+    --primary: #4f46e5; /* indigo-600 */
+    --primary-text: #ffffff; /* white */
+}
