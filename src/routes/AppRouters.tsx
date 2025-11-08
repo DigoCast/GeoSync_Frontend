@@ -2,6 +2,9 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import Sidebar from "../components/Sidebar";
 import ThemeToggle from "../components/ThemeToggle";
+import Continente from "../pages/Continente";
+import Pais from "../pages/Pais";
+import Cidade from "../pages/Cidade";
 
 const AppRouters = () => {
   return (
@@ -11,11 +14,14 @@ const AppRouters = () => {
           <Sidebar />
         </div>
         <div className="w-full">
-          <header className="fixed right-0">
+          <header className="fixed right-0 m-7">
             <ThemeToggle />
           </header>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/continente" element={<Continente />} />
+            <Route path="/pais" element={<Pais />} />
+            <Route path="/cidade" element={<Cidade />} />
           </Routes>
         </div>
       </Router>
