@@ -28,7 +28,7 @@ body{
     --text-secondary: #334155; /* slate-700 */
     --card-background: #f1f6fa;
     --border: #e4e8ec; /* slate-200 */
-    --hover: #cbd6e0; /* slate-100 */
+    --hover: #e0ebf5; /* slate-100 */
     --primary: #432dd7; /* indigo-600 */
     --primary-hover: oklch(58.5% 0.233 277.117); /* indigo-500 */
     --primary-text: #ffffff; /* white */

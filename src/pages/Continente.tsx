@@ -1,15 +1,34 @@
+import { useState } from "react";
 import DataTable from "../components/DataTable";
 import { FilterBar } from "../components/FilterBar";
+import SideModal from "../components/SideModal";
 import { useFetchData } from "../hooks/useFetchData";
 import { api } from "../services/api";
+import type { Continente } from "../types/Continente";
 
 const Continente = () => {
   const { data: continentes, loading, error, refetch } = useFetchData("continente");
+  const [selectedItem, setSelectedItem] = useState<Continente | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleRowClick = async (index: number) => {
+    if(!continentes) return;
+    const id = continentes[index].id;
+
+    try {
+      const response = await handleGetContinenteById(id);
+      setSelectedItem(response?.data);
+      setIsOpen(true);
+    } catch (error) {
+      console.log("Erro ao buscar continente", error)
+    }
+  }
 
   const handleAdd = async () => {
     try {
       await api.post("continente", { nome: "Novo Continente", descricao: "Exemplo" })
       refetch();
+      
     } catch (error) {
       console.log("Erro ao criar continente", error)
     }
@@ -23,6 +42,16 @@ const Continente = () => {
       console.error("Erro ao deletar continente", error);
     }
   };
+
+  const handleGetContinenteById = async (id: number) => {
+    try {
+      const continenteSelecionado = await api.get(`continente/${id}`);
+      console.log(continenteSelecionado);
+      return continenteSelecionado;
+    } catch (error) {
+      console.log("erro ao encontrar continente", error)
+    }
+  }
 
   const columns = ["Nome", "Descrição", "Ações"];
   const rows = continentes?.map((conti) => [conti.nome, conti.descricao, <Actions id={conti.id} onDelete={handleDelete} />]) || [];
@@ -46,9 +75,46 @@ const Continente = () => {
         <div className="flex w-full py-5 items-center justify-center">
           {loading && <p>Carregando...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {!loading && !error && <DataTable columns={columns} rows={rows} />}
+          {!loading && !error && <DataTable columns={columns} rows={rows}  onRowClick={handleRowClick} />}
         </div>
       </div>
+
+      <SideModal isOpen={isOpen} onClose={() => setIsOpen(false)} title={`Detalhes do Continente ${selectedItem?.nome}`}>
+        {selectedItem && (
+          <div className="space-y-2">
+            <p><strong>Nome:</strong> {selectedItem.nome}</p>
+            <p><strong>Descrição:</strong> {selectedItem.descricao}</p>
+
+            <div className="mt-5">
+              <h3 className="font-semibold text-lg mb-2">Paises:</h3>
+              {selectedItem.paises && selectedItem.paises.length > 0 ? (
+                <div className="max-h-60 overflow-y-auto rounded-md border border-border">
+                  <table className="w-full text-sm border-collapse">
+                    <thead className="sticky top-0 bg-surface z-10">
+                      <tr className="text-left border-b border-border">
+                        <th className="p-2 font-medium">Nome</th>
+                        <th className="p-2 font-medium">Idioma</th>
+                        <th className="p-2 font-medium">Moeda</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedItem.paises.map((pais) => (
+                        <tr key={pais.id} className="border-t border-border hover:bg-hover transition">
+                          <td className="p-2">{pais.nome}</td>
+                          <td className="p-2">{pais.idiomaOficial}</td>
+                          <td className="p-2">{pais.moeda}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-text-secondary">Nenhum país cadastrado</p>
+              )}
+            </div>
+          </div>
+        )}
+      </SideModal>
     </div>
   )
 }
@@ -58,7 +124,10 @@ const Actions = ({ id, onDelete }: { id: number; onDelete: (id: number) => void 
     <i className="fa-solid fa-pen cursor-pointer hover:text-purple-600"></i>
     <i
       className="fa-solid fa-trash cursor-pointer text-red-500 hover:text-red-400"
-      onClick={() => onDelete(id)}
+      onClick={(e) => {
+        e.stopPropagation(); 
+        onDelete(id)
+      }}
     ></i>
   </div>
 );

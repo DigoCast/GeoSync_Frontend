@@ -47,7 +47,7 @@ const Actions = ({ id, onDelete }: { id: number; onDelete: (id: number) => void 
   <div className="flex gap-3 text-primary">
     <i className="fa-solid fa-pen cursor-pointer hover:text-purple-600"></i>
     <i
-      className="fa-solid fa-trash cursor-pointer text-red-500 hover:text-red-400"
+      className="fa-solid fa-trash fa-lg cursor-pointer text-red-500 hover:text-red-400"
       onClick={() => onDelete(id)}
     ></i>
   </div>
