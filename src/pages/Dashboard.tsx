@@ -20,7 +20,7 @@ const CardSeeMore = ({to, icon, title, description}: {to: string, icon: string, 
     <i className={`fa-solid ${icon} text-3xl text-primary mb-4`}></i>
     <h2 className="text-xl font-semibold mb-2">{title}</h2>
     <p className="text-text-secondary">{description}</p>
-    <div className="mt-2 p-2 border border-primary hover:gradient-dynamic hover:border-transparent rounded-lg w-2/6 min-w-20 transition-all duration-200">
+    <div className="mt-2 p-2 border border-primary hover:gradient-dynamic hover:border-transparent rounded-lg w-2/6 min-w-20">
       <NavLink to={to} className={'flex items-center justify-center'}>
         <p>Ver {title}</p>
       </NavLink>

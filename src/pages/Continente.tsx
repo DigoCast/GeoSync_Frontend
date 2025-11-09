@@ -4,12 +4,16 @@ import { FilterBar } from "../components/FilterBar";
 import SideModal from "../components/SideModal";
 import { useFetchData } from "../hooks/useFetchData";
 import { api } from "../services/api";
-import type { Continente } from "../types/Continente";
+import type { Continente, ContinenteFormData } from "../types/Continente";
+import ContinenteFormModal from "../components/ContinenteFormModal";
+import toast from "react-hot-toast";
 
 const Continente = () => {
   const { data: continentes, loading, error, refetch } = useFetchData("continente");
   const [selectedItem, setSelectedItem] = useState<Continente | null>(null)
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenSideModal, setIsOpenSideModal] = useState(false);
+  const [isOpenCenterModal, setIsOpenCenterModal] = useState(false);
+
 
   const handleRowClick = async (index: number) => {
     if(!continentes) return;
@@ -18,25 +22,45 @@ const Continente = () => {
     try {
       const response = await handleGetContinenteById(id);
       setSelectedItem(response?.data);
-      setIsOpen(true);
+      setIsOpenSideModal(true);
     } catch (error) {
       console.log("Erro ao buscar continente", error)
     }
   }
 
-  const handleAdd = async () => {
+  const handleSubmit = async (data: ContinenteFormData) => {
     try {
-      await api.post("continente", { nome: "Novo Continente", descricao: "Exemplo" })
+      const request = selectedItem
+        ? api.put(`continente/${selectedItem.id}`, data)
+        : api.post("continente", data);
+
+      await toast.promise(
+        request, {
+          loading: selectedItem ? "Atualizando continente..." : "Criando continente...",
+          success: selectedItem ? "Continente atualizado com sucesso!" : "Continente criado com sucesso!",
+          error: "Erro ao salvar continente.",
+        }
+      );
+
       refetch();
-      
+      setIsOpenCenterModal(false);
     } catch (error) {
-      console.log("Erro ao criar continente", error)
+      console.error("Erro ao salvar continente:", error);
     }
   }
 
   const handleDelete = async (id: number) => {
     try {
-      await api.delete(`continente/${id}`);
+      const request = api.delete(`continente/${id}`);
+      
+      await toast.promise(
+        request, {
+          loading:  "Deletando continente...",
+          success: "Continente deletado com sucesso!",
+          error: "Erro ao deletar continente.",
+        }
+      )
+
       refetch();
     } catch (error) {
       console.error("Erro ao deletar continente", error);
@@ -46,15 +70,14 @@ const Continente = () => {
   const handleGetContinenteById = async (id: number) => {
     try {
       const continenteSelecionado = await api.get(`continente/${id}`);
-      console.log(continenteSelecionado);
       return continenteSelecionado;
     } catch (error) {
-      console.log("erro ao encontrar continente", error)
+      console.log("erro ao encontrar continente", error);
     }
   }
 
   const columns = ["Nome", "Descrição", "Ações"];
-  const rows = continentes?.map((conti) => [conti.nome, conti.descricao, <Actions id={conti.id} onDelete={handleDelete} />]) || [];
+  const rows = continentes?.map((conti) => [conti.nome, conti.descricao, <Actions continente={conti} onEdit={(cont) => {setSelectedItem(cont); setIsOpenCenterModal(true);}} onDelete={handleDelete} />]) || [];
 
   return (
     <div className="w-full">
@@ -69,17 +92,20 @@ const Continente = () => {
       <div className="p-5">
         <FilterBar
           searchPlaceholder="Buscar continente..."
-          onAdd={handleAdd}
+          onAdd={() => {
+            setSelectedItem(null);
+            setIsOpenCenterModal(true)
+          }}
           addLabel="Novo Continente"
         />
         <div className="flex w-full py-5 items-center justify-center">
           {loading && <p>Carregando...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {!loading && !error && <DataTable columns={columns} rows={rows}  onRowClick={handleRowClick} />}
+          {!loading && !error && <DataTable columns={columns} rows={rows} onRowClick={handleRowClick} />}
         </div>
       </div>
 
-      <SideModal isOpen={isOpen} onClose={() => setIsOpen(false)} title={`Detalhes do Continente ${selectedItem?.nome}`}>
+      <SideModal isOpen={isOpenSideModal} onClose={() => setIsOpenSideModal(false)} title={`Detalhes do Continente ${selectedItem?.nome}`}>
         {selectedItem && (
           <div className="space-y-2">
             <p><strong>Nome:</strong> {selectedItem.nome}</p>
@@ -115,18 +141,40 @@ const Continente = () => {
           </div>
         )}
       </SideModal>
+
+      <ContinenteFormModal
+        isOpen={isOpenCenterModal}
+        onClose={() => setIsOpenCenterModal(false)}
+        continente={selectedItem || undefined}
+        onSubmit={handleSubmit}
+      />
+
     </div>
   )
 }
 
-const Actions = ({ id, onDelete }: { id: number; onDelete: (id: number) => void }) => (
+const Actions = ({
+  continente,
+  onEdit,
+  onDelete,
+}: {
+  continente: Continente;
+  onEdit: (continente: Continente) => void;
+  onDelete: (id: number) => void;
+}) => (
   <div className="flex gap-3 text-primary">
-    <i className="fa-solid fa-pen cursor-pointer hover:text-purple-600"></i>
+    <i
+      className="fa-solid fa-pen cursor-pointer hover:text-primary-hover"
+      onClick={(e) => {
+        e.stopPropagation();
+        onEdit(continente);
+      }}
+    ></i>
     <i
       className="fa-solid fa-trash cursor-pointer text-red-500 hover:text-red-400"
       onClick={(e) => {
-        e.stopPropagation(); 
-        onDelete(id)
+        e.stopPropagation();
+        onDelete(continente.id);
       }}
     ></i>
   </div>

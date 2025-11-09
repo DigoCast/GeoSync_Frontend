@@ -6,3 +6,5 @@ export interface Continente{
     descricao: string
     paises?: Pais[];
 }
+
+export type ContinenteFormData = Omit<Continente, "id" | "paises">;
