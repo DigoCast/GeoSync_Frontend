@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# 🌍 GeoSync Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Um painel administrativo interativo para gerenciamento de Continentes, Países e Cidades, com integração de clima em tempo real e bandeiras nacionais, utilizando uma arquitetura limpa e moderna em React + TypeScript e um backend em Node.js + Express + Prisma.
 
-Currently, two official plugins are available:
+## 🚀 Tecnologias Utilizadas
+### Frontend
+- ⚛️ React (com TypeScript)
+- 🎨 TailwindCSS para estilização
+- 🧩 Axios para comunicação com o backend
+- 🧠 Custom Hooks (useFetchData, useClima)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Backend
+- 🧱 Node.js com Express
+- 🗃️ Prisma ORM (PostgreSQL)
+- 🌦️ Integração com WeatherAPI para dados climáticos
+- 🗺️ Integração com RestCountries API (Dados geográficos)
+- 🧩 Arquitetura modular (Controller, Service, Routes)
 
-## React Compiler
+## 🧭 Funcionalidades
+### 🌐 Continentes
+- Criar, editar, listar e deletar continentes
+- Visualização detalhada com países associados
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🏳️ Países
+- Cadastro automático via RestCountries API
+- Exibição da bandeira, idioma, moeda e população
+- Associação com continentes existentes
 
-## Expanding the ESLint configuration
+### 🏙️ Cidades
+- Cadastro vinculado a países existentes
+- Exibição de dados geográficos (latitude, longitude)
+- Consulta de clima atual em tempo real com WeatherAPI
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ⚙️ Como Rodar o Projeto
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Backend
+```bash
+  cd backend
+  npm install
+  npx prisma migrate dev
+  npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Frontend
+```bash
+  cd frontend
+  npm install
+  npm run dev
 ```
+
+Acessar o projeto em:  [http://localhost:5173](http://localhost:5173)
