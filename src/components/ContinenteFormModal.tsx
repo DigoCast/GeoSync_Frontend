@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Continente, ContinenteFormData } from "../types/Continente";
+import type { ContinenteType, ContinenteFormData } from "../types/ContinenteType";
 import CenterModal from "./CenterModal";
 import toast from "react-hot-toast";
 
@@ -7,7 +7,7 @@ interface ContinenteFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: ContinenteFormData) => void;
-    continente?: Continente;
+    continente?: ContinenteType;
 }
 
 const ContinenteFormModal = ({isOpen, onClose, onSubmit, continente}: ContinenteFormModalProps) => {

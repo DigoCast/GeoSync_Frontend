@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Pais, PaisFormData } from "../types/Pais";
-import type { Continente } from "../types/Continente";
+import type { PaisType, PaisFormData } from "../types/PaisType";
+import type { ContinenteType } from "../types/ContinenteType";
 import { api } from "../services/api";
 import CenterModal from "./CenterModal";
 import toast from "react-hot-toast";
@@ -9,12 +9,12 @@ interface PaisFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: PaisFormData) => void
-    pais?: Pais;
+    pais?: PaisType;
 }
 
 const PaisFormModal = ({isOpen, onClose, onSubmit, pais}: PaisFormModalProps) => {
     const [nome, setNome] = useState("");
-    const [continentes, setContinentes] = useState<Continente[]>([]);
+    const [continentes, setContinentes] = useState<ContinenteType[]>([]);
     const [continenteId, setContinenteId] = useState<string>(""); 
     const [loadingContinentes, setLoadingContinentes] = useState(false);
 
@@ -35,7 +35,7 @@ const PaisFormModal = ({isOpen, onClose, onSubmit, pais}: PaisFormModalProps) =>
         };
 
         fetchContinentes();
-            return () => {
+        return () => {
             mounted = false;
         };
     }, [isOpen]);

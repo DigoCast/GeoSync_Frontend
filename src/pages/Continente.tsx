@@ -4,13 +4,13 @@ import { FilterBar } from "../components/FilterBar";
 import SideModal from "../components/SideModal";
 import { useFetchData } from "../hooks/useFetchData";
 import { api } from "../services/api";
-import type { Continente, ContinenteFormData } from "../types/Continente";
+import type { ContinenteType, ContinenteFormData } from "../types/ContinenteType";
 import ContinenteFormModal from "../components/ContinenteFormModal";
 import toast from "react-hot-toast";
 
 const Continente = () => {
   const { data: continentes, loading, error, refetch } = useFetchData("continente");
-  const [selectedItem, setSelectedItem] = useState<Continente | null>(null)
+  const [selectedItem, setSelectedItem] = useState<ContinenteType | null>(null)
   const [isOpenSideModal, setIsOpenSideModal] = useState(false);
   const [isOpenCenterModal, setIsOpenCenterModal] = useState(false);
 
@@ -158,8 +158,8 @@ const Actions = ({
   onEdit,
   onDelete,
 }: {
-  continente: Continente;
-  onEdit: (continente: Continente) => void;
+  continente: ContinenteType;
+  onEdit: (continente: ContinenteType) => void;
   onDelete: (id: number) => void;
 }) => (
   <div className="flex gap-3 text-primary">
