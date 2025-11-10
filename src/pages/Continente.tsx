@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 import { FilterBar } from "../components/FilterBar";
 import SideModal from "../components/SideModal";
@@ -13,11 +13,29 @@ const Continente = () => {
   const [selectedItem, setSelectedItem] = useState<ContinenteType | null>(null)
   const [isOpenSideModal, setIsOpenSideModal] = useState(false);
   const [isOpenCenterModal, setIsOpenCenterModal] = useState(false);
+  const [ search, setSearch ] = useState("");
+  const [ filteredData, setFilteredData ] = useState<ContinenteType[]>([])
 
+  useEffect(() => {
+      if (!search.trim()) {
+        setFilteredData(continentes || [])
+        return
+      }
+
+    const delay = setTimeout(() => {
+      const fetchFiltered = async () => {
+        const response = await api.get(`pais?nome=${search}`)
+        setFilteredData(response.data)
+      }
+      fetchFiltered()
+    }, 500)
+
+    return () => clearTimeout(delay)
+  }, [search, continentes])
 
   const handleRowClick = async (index: number) => {
     if(!continentes) return;
-    const id = continentes[index].id;
+    const id = filteredData[index].id;
 
     try {
       const response = await handleGetContinenteById(id);
@@ -77,7 +95,7 @@ const Continente = () => {
   }
 
   const columns = ["Nome", "Descrição", "Ações"];
-  const rows = continentes?.map((conti) => [conti.nome, conti.descricao, <Actions continente={conti} onEdit={(cont) => {setSelectedItem(cont); setIsOpenCenterModal(true);}} onDelete={handleDelete} />]) || [];
+  const rows = filteredData?.map((conti) => [conti.nome, conti.descricao, <Actions continente={conti} onEdit={(cont) => {setSelectedItem(cont); setIsOpenCenterModal(true);}} onDelete={handleDelete} />]) || [];
 
   return (
     <div className="w-full">
@@ -92,6 +110,7 @@ const Continente = () => {
       <div className="p-5">
         <FilterBar
           searchPlaceholder="Buscar continente..."
+          onSearchChange={(value) => setSearch(value)}
           onAdd={() => {
             setSelectedItem(null);
             setIsOpenCenterModal(true)

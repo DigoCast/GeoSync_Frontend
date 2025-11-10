@@ -2,7 +2,7 @@ import { FilterBar } from '../components/FilterBar'
 import { useFetchData } from '../hooks/useFetchData'
 import DataTable from '../components/DataTable';
 import { api } from '../services/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CidadeType, CidadeFormData } from '../types/CidadeType';
 import toast from 'react-hot-toast';
 import SideModal from '../components/SideModal';
@@ -16,10 +16,29 @@ const Cidade = () => {
   const [ isOpenSideModal, setIsOpenSideModal] = useState(false);
   const [ isOpenCenterModal, setIsOpenCenterModal ] = useState(false);
   const { clima , loadingClima, errorClima, refetchClima } = useClima(selectedItem?.id || null)
+  const [ search, setSearch ] = useState("");
+  const [ filteredData, setFilteredData ] = useState<CidadeType[]>([])
+
+  useEffect(() => {
+    if (!search.trim()) {
+      setFilteredData(cidades || [])
+      return
+    }
+    
+    const delay = setTimeout(() => {
+      const fetchFiltered = async () => {
+        const response = await api.get(`cidade?nome=${search}`)
+        setFilteredData(response.data)
+      }
+      fetchFiltered()
+    }, 500)
+
+    return () => clearTimeout(delay)
+  }, [search, cidades])
 
   const handleRowClick = async (index: number) => {
     if(!cidades) return;
-    const id = cidades[index].id;
+    const id = filteredData[index].id;
     
     try {
       const response = await handleGetCidadeById(id);
@@ -73,7 +92,7 @@ const Cidade = () => {
   }
 
   const columns = ["Nome", "População", "Lat", "Lon", "Ações"]
-  const rows = cidades?.map((cid) => [cid.nome, cid.populacao, cid.latitude, cid.longitude, <Actions cidade={cid} onEdit={(c) => {setSelectedItem(c); setIsOpenCenterModal(true)}} onDelete={handleDelete} />])
+  const rows = filteredData?.map((cid) => [cid.nome, cid.populacao, cid.latitude, cid.longitude, <Actions cidade={cid} onEdit={(c) => {setSelectedItem(c); setIsOpenCenterModal(true)}} onDelete={handleDelete} />])
   return (
     <div className="w-full">
         <div className="p-7 flex flex-col border-b border-border space-y-3">
@@ -87,6 +106,7 @@ const Cidade = () => {
         <div className="p-5">
           <FilterBar
               searchPlaceholder="Buscar cidade..."
+              onSearchChange={(value) => setSearch(value)}
               onAdd={() => {
                 setSelectedItem(null);
                 setIsOpenCenterModal(true);

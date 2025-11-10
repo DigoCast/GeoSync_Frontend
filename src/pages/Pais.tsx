@@ -2,7 +2,7 @@ import { FilterBar } from '../components/FilterBar'
 import { useFetchData } from '../hooks/useFetchData'
 import DataTable from '../components/DataTable'
 import { api } from '../services/api'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PaisType, PaisFormData } from '../types/PaisType'
 import toast from 'react-hot-toast'
 import SideModal from '../components/SideModal'
@@ -13,10 +13,29 @@ const Pais = () => {
   const [ selectedItem, setSelectedItem ] = useState<PaisType | null>(null)
   const [ isOpenSideModal, setIsOpenSideModal] = useState(false)
   const [ isOpenCenterModal, setIsOpenCenterModal ] = useState(false)
+  const [ search, setSearch ] = useState("");
+  const [ filteredData, setFilteredData ] = useState<PaisType[]>([])
+
+  useEffect(() => {
+    if (!search.trim()) {
+      setFilteredData(paises || [])
+      return
+    }
+
+    const delay = setTimeout(() => {
+      const fetchFiltered = async () => {
+        const response = await api.get(`pais?nome=${search}`)
+        setFilteredData(response.data)
+      }
+      fetchFiltered()
+    }, 500)
+
+    return () => clearTimeout(delay)
+  }, [search, paises])
 
   const handleRowClick = async (index: number) => {
     if (!paises) return;
-    const id = paises[index].id;
+    const id = filteredData[index].id
 
     try{
       const response = await handleGetPaisById(id);
@@ -74,7 +93,7 @@ const Pais = () => {
   }
 
   const columns = ["Nome", "Sigla", "População", "Idioma", "Ações"];
-  const rows = paises?.map((pais) => [pais.nome, pais.sigla, pais.populacao, pais.idiomaOficial, <Actions pais={pais} onEdit={(p) => {setSelectedItem(p); setIsOpenCenterModal(true);}} onDelete={handleDelete}/>]) || []
+  const rows = filteredData?.map((pais) => [pais.nome, pais.sigla, pais.populacao, pais.idiomaOficial, <Actions pais={pais} onEdit={(p) => {setSelectedItem(p); setIsOpenCenterModal(true);}} onDelete={handleDelete}/>]) || []
   return (
     <div className="w-full">
         <div className="p-7 flex flex-col border-b border-border space-y-3">
@@ -88,6 +107,7 @@ const Pais = () => {
         <div className="p-5">
           <FilterBar
               searchPlaceholder="Buscar país..."
+              onSearchChange={(value) => setSearch(value)}
               onAdd={() => {
                 setSelectedItem(null);
                 setIsOpenCenterModal(true);
