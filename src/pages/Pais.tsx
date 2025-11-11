@@ -93,7 +93,28 @@ const Pais = () => {
   }
 
   const columns = ["Nome", "Sigla", "População", "Idioma", "Ações"];
-  const rows = filteredData?.map((pais) => [pais.nome, pais.sigla, pais.populacao, pais.idiomaOficial, <Actions pais={pais} onEdit={(p) => {setSelectedItem(p); setIsOpenCenterModal(true);}} onDelete={handleDelete}/>]) || []
+  const rows =
+    filteredData?.map((pais) => [
+      <div className="flex items-center gap-3">
+        <img
+          src={`https://flagcdn.com/w40/${pais.sigla.toLowerCase()}.png`}
+          alt={pais.nome}
+          className="w-6 h-6 rounded-full object-cover border border-border"
+        />
+        <span>{pais.nome}</span>
+      </div>,
+      pais.sigla,
+      pais.populacao,
+      pais.idiomaOficial,
+      <Actions
+        pais={pais}
+        onEdit={(p) => {
+          setSelectedItem(p);
+          setIsOpenCenterModal(true);
+        }}
+        onDelete={handleDelete}
+      />,
+    ]) || [];
   return (
     <div className="w-full">
         <div className="p-7 flex flex-col border-b border-border space-y-3">
