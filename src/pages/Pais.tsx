@@ -125,7 +125,7 @@ const Pais = () => {
           {selectedItem && (
             <div className="space-y-2">
               <p><strong>Bandeira </strong></p>
-              <div className='border border-primary-hover rounded-lg'>
+              <div className='border border-border rounded-lg'>
                 <img src={`https://flagcdn.com/w1280/${selectedItem.sigla.toLowerCase()}.png`} className='w-full max-h-90 rounded-lg' alt="" />
               </div>
               <p><strong>Nome:</strong> {selectedItem.nome}</p>

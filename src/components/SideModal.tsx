@@ -20,7 +20,7 @@ export function SideModal({isOpen, onClose, title, children}: SideModalProps) {
                     <i className="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div className="p-5 overflow-y-auto">{children}</div>
+            <div className="flex-1 overflow-y-auto p-5 max-h-[calc(100vh-70px)]">{children}</div>
         </div>
     </div>
   )

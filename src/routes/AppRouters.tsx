@@ -5,6 +5,7 @@ import ThemeToggle from "../components/ThemeToggle";
 import Continente from "../pages/Continente";
 import Pais from "../pages/Pais";
 import Cidade from "../pages/Cidade";
+import Bandeiras from "../pages/Bandeiras";
 
 const AppRouters = () => {
   return (
@@ -22,6 +23,7 @@ const AppRouters = () => {
             <Route path="/continente" element={<Continente />} />
             <Route path="/pais" element={<Pais />} />
             <Route path="/cidade" element={<Cidade />} />
+            <Route path="/bandeiras" element={<Bandeiras />} />
           </Routes>
         </div>
       </Router>
