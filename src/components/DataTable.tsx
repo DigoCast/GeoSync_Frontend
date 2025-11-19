@@ -7,7 +7,7 @@ interface DataTableProps {
 const DataTable = ({columns, rows, onRowClick}: DataTableProps) => {
 
     return (
-        <div className="w-full bg-card-background rounded-lg shadow-md border border-border overflow-hidden">
+        <div className="w-full bg-card-background rounded-lg shadow-md border border-border overflow-hidden overflow-x-auto">
             <table className="w-full text-left">
                 <thead className="bg-surface text-text-secondary">
                     <tr>

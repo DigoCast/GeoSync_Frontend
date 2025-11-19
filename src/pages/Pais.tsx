@@ -7,31 +7,48 @@ import type { PaisType, PaisFormData } from '../types/PaisType'
 import toast from 'react-hot-toast'
 import SideModal from '../components/SideModal'
 import PaisFormModal from '../components/PaisFormModal'
+import type { ContinenteType } from '../types/ContinenteType'
 
 const Pais = () => {
   const { data: paises, loading, error, refetch} = useFetchData("pais")
+  const { data: continentes } = useFetchData("continente")
   const [ selectedItem, setSelectedItem ] = useState<PaisType | null>(null)
   const [ isOpenSideModal, setIsOpenSideModal] = useState(false)
   const [ isOpenCenterModal, setIsOpenCenterModal ] = useState(false)
   const [ search, setSearch ] = useState("");
   const [ filteredData, setFilteredData ] = useState<PaisType[]>([])
 
+  const [ continenteIdFilter, setContinenteIdFilter ] = useState("");
+  const [ populacaoMinFilter, setPopulacaoMinFilter ] = useState("");
+  const [ populacaoMaxFilter, setPopulacaoMaxFilter ] = useState("");
+
   useEffect(() => {
-    if (!search.trim()) {
+    if (!search.trim() && !continenteIdFilter && !populacaoMinFilter && !populacaoMaxFilter) {
       setFilteredData(paises || [])
       return
     }
 
     const delay = setTimeout(() => {
       const fetchFiltered = async () => {
-        const response = await api.get(`pais?nome=${search}`)
-        setFilteredData(response.data)
+        const queryParams = new URLSearchParams();
+        if (search.trim()) queryParams.append('nome', search.trim());
+        if (continenteIdFilter) queryParams.append('continenteId', continenteIdFilter);
+        if (populacaoMinFilter) queryParams.append('populacaoMin', populacaoMinFilter);
+        if (populacaoMaxFilter) queryParams.append('populacaoMax', populacaoMaxFilter);
+
+        try {
+            const response = await api.get(`pais?${queryParams.toString()}`)
+            setFilteredData(response.data)
+        } catch (error) {
+            console.error("Erro ao buscar dados filtrados:", error);
+            setFilteredData([]);
+        }
       }
       fetchFiltered()
     }, 500)
 
     return () => clearTimeout(delay)
-  }, [search, paises])
+  }, [search, paises, continenteIdFilter, populacaoMinFilter, populacaoMaxFilter])
 
   const handleRowClick = async (index: number) => {
     if (!paises) return;
@@ -92,6 +109,38 @@ const Pais = () => {
     }
   }
 
+const filtersJSX = (
+    <>
+      <select
+        value={continenteIdFilter}
+        onChange={(e) => setContinenteIdFilter(e.target.value)}
+        className="px-3 py-2 rounded-lg border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer text-sm w-full sm:w-auto"
+      >
+        <option value="">Todos os Continentes</option>
+        {(continentes as ContinenteType[] || []).map((cont) => (
+          <option key={cont.id} value={String(cont.id)}>
+            {cont.nome}
+          </option>
+        ))}
+      </select>
+
+      <input
+        type="number"
+        placeholder="Pop. Mínima"
+        value={populacaoMinFilter}
+        onChange={(e) => setPopulacaoMinFilter(e.target.value)}
+        className="px-3 py-2 rounded-lg border border-border text-text-primary focus:outline-none focus:ring-2 focus:ring-primary transition text-sm w-full sm:w-36"
+      />
+      <input
+        type="number"
+        placeholder="Pop. Máxima"
+        value={populacaoMaxFilter}
+        onChange={(e) => setPopulacaoMaxFilter(e.target.value)}
+        className="px-3 py-2 rounded-lg border border-border text-text-primary focus:outline-none focus:ring-2 focus:ring-primary transition text-sm w-full sm:w-36"
+      />
+    </>
+  );
+
   const columns = ["Nome", "Sigla", "População", "Idioma", "Ações"];
   const rows =
     filteredData?.map((pais) => [
@@ -134,6 +183,7 @@ const Pais = () => {
                 setIsOpenCenterModal(true);
               }}
               addLabel="Novo País"
+              filters={filtersJSX}
           />
           <div className="flex w-full py-5 items-center justify-center">
             {loading && <p>Carregando...</p>}

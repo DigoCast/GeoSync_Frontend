@@ -12,7 +12,7 @@ export function SideModal({isOpen, onClose, title, children}: SideModalProps) {
     <div>
         <div className={`fixed inset-0 bg-black/20 backdrop-blur-xs z-40 ${isOpen? "opacity-100" : "opacity-0 invisible"}`}
         onClick={onClose}/>
-        <div className={`fixed top-0 right-0 h-full w-9/10 md:w-120 bg-card-background border-l border-border shadow-lg z-50 transform transition-transform duration-300 ease-in-out
+        <div className={`fixed top-0 right-0 h-full w-full sm:w-9/10 md:w-120 bg-card-background border-l border-border shadow-lg z-50 transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
             <div className="flex justify-between items-center p-5 border-b border-border">
                 <h2 className="text-xl font-semibold">{title}</h2>

@@ -9,9 +9,11 @@ import SideModal from '../components/SideModal';
 import CidadeFormModal from '../components/CidadeFormModal';
 import { useClima } from '../hooks/useClima';
 import ClimaCard from '../components/ClimaCard';
+import type { PaisType } from '../types/PaisType';
 
 const Cidade = () => {
   const { data: cidades, loading, error, refetch } = useFetchData("cidade");
+  const { data: paises } = useFetchData("pais");
   const [selectedItem, setSelectedItem] = useState<CidadeType | null>(null)
   const [ isOpenSideModal, setIsOpenSideModal] = useState(false);
   const [ isOpenCenterModal, setIsOpenCenterModal ] = useState(false);
@@ -19,22 +21,32 @@ const Cidade = () => {
   const [ search, setSearch ] = useState("");
   const [ filteredData, setFilteredData ] = useState<CidadeType[]>([])
 
+  const [ paisIdFilter, setPaisIdFilter ] = useState("");
+
   useEffect(() => {
-    if (!search.trim()) {
+    if (!search.trim() && !paisIdFilter) {
       setFilteredData(cidades || [])
       return
     }
     
     const delay = setTimeout(() => {
       const fetchFiltered = async () => {
-        const response = await api.get(`cidade?nome=${search}`)
-        setFilteredData(response.data)
+        const queryParams = new URLSearchParams();
+        if (search.trim()) queryParams.append('nome', search.trim());
+        if (paisIdFilter) queryParams.append('paisId', paisIdFilter);
+        try {
+            const response = await api.get(`cidade?${queryParams.toString()}`)
+            setFilteredData(response.data)
+        } catch (error) {
+            console.error("Erro ao buscar dados filtrados:", error);
+            setFilteredData([]);
+        }
       }
       fetchFiltered()
     }, 500)
 
     return () => clearTimeout(delay)
-  }, [search, cidades])
+  }, [search, cidades, paisIdFilter])
 
   const handleRowClick = async (index: number) => {
     if(!cidades) return;
@@ -91,6 +103,23 @@ const Cidade = () => {
     }
   }
 
+  const filtersJSX = (
+    <>
+      <select
+        value={paisIdFilter}
+        onChange={(e) => setPaisIdFilter(e.target.value)}
+        className="px-2 py-2 rounded-lg border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer text-sm w-full sm:w-auto"
+      >
+        <option value="">Todas as Cidades</option>
+        {(paises as PaisType[] || []).map((pais) => (
+          <option key={pais.id} value={String(pais.id)}>
+            {pais.nome}
+          </option>
+        ))}
+      </select>
+    </>
+  );
+
   const columns = ["Nome", "População", "Lat", "Lon", "Ações"]
   const rows = filteredData?.map((cid) => [cid.nome, cid.populacao, cid.latitude, cid.longitude, <Actions cidade={cid} onEdit={(c) => {setSelectedItem(c); setIsOpenCenterModal(true)}} onDelete={handleDelete} />])
   return (
@@ -112,6 +141,7 @@ const Cidade = () => {
                 setIsOpenCenterModal(true);
               }}
               addLabel="Nova Cidade"
+              filters={filtersJSX}
           />
           <div className="flex w-full py-5 items-center justify-center">
             {loading && <p>Carregando...</p>}

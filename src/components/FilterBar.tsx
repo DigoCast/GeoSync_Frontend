@@ -17,10 +17,9 @@ export const FilterBar = ({
 }: FilterBarProps) => {
   const hasFilters = Boolean(filters);
   return (
-    <div className="flex flex-wrap items-center bg-card-background p-4 rounded-lg shadow-sm border border-border">
-      
-      {hasFilters && <div className="flex gap-3 flex-wrap">{filters}</div>}
-      <div className={`flex items-center gap-3 ${!hasFilters ? "flex-1" : ""}`}>
+    <div className="flex flex-wrap items-center bg-card-background p-4 rounded-lg shadow-sm border border-border gap-3">
+      {hasFilters && <div className="flex gap-3 flex-wrap shrink-0 w-full sm:w-auto">{filters}</div>}
+      <div className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full ${hasFilters ? "sm:flex-1" : "flex-1"}`}>
         <input
           type="text"
           placeholder={searchPlaceholder}
@@ -28,12 +27,12 @@ export const FilterBar = ({
           className={`
             px-3 py-2 rounded-lg border border-border text-text-primary
             focus:outline-none focus:ring-2 focus:ring-primary transition
-            ${!hasFilters ? "flex-1" : "w-64"}
+            w-full ${hasFilters ? "sm:flex-1" : "flex-1"}
           `}
         />
         <button
           onClick={onAdd}
-          className="flex items-center gap-2 bg-primary hover:gradient-dynamic text-white px-4 py-2 rounded-lg cursor-pointer"
+          className="flex items-center justify-center gap-2 bg-primary hover:gradient-dynamic text-white px-4 py-2 rounded-lg cursor-pointer w-full sm:w-auto shrink-0"
         >
           <i className="fa-solid fa-plus"></i>
           {addLabel}
